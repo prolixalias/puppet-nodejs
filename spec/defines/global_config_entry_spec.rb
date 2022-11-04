@@ -125,7 +125,17 @@ describe 'nodejs::npm::global_config_entry', type: :define do
       context 'with ensure npm package set to absent and repo class set to something else' do
         let(:pre_condition) do
           <<-PUPPET
-            class something_else { }
+            class something_else (
+              Boolean $enable_src = true,
+              Optional[String] $ensure = undef,
+              Optional[String] $priority = undef,
+              Optional[String] $url_suffix = undef,
+              Optional[String] $pin = undef,
+              Optional[String] $proxy = undef,
+              Optional[String] $proxy_password = undef,
+              Optional[String] $proxy_username = undef,
+              Optional[String] $release = undef,
+            ) { }
             class { 'nodejs':
               nodejs_package_name => 'node-package-name',
               npm_package_name    => 'npm-package-name',

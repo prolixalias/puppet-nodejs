@@ -1,43 +1,60 @@
-# PRIVATE CLASS: Do not use directly
-class nodejs::repo::nodesource {
-  $enable_src     = $nodejs::repo_enable_src
-  $ensure         = $nodejs::repo_ensure
-  $pin            = $nodejs::repo_pin
-  $priority       = $nodejs::repo_priority
-  $proxy          = $nodejs::repo_proxy
-  $proxy_password = $nodejs::repo_proxy_password
-  $proxy_username = $nodejs::repo_proxy_username
-  $release        = $nodejs::repo_release
-  $url_suffix     = $nodejs::repo_url_suffix
+##############################################################
+#
+#   nodesource
+#
+##############################################################458
+#
+# @summary nodesource subclass
+#
+# @param enable_src
+#   Is this repo enabled?
+# @param ensure
+#   Repo absent/present
+# @param priority
+#   The repo's priority, 1-99 (higher number = lower priority)
+# @param url_suffix
+#   Appended to repo URL, essentially the nodejs version
+# @param pin
+#   Apt repo pinning
+# @param proxy
+#   FQDN of proxy server
+# @param proxy_password
+#   Password to access proxy server
+# @param proxy_username
+#   Username to access proxy server
+# @param release
+#   Apt repo release codename
+#
 
+#
+class nodejs::repo::nodesource (
+  Boolean $enable_src,
+  String $ensure,
+  String $priority,
+  String $url_suffix,
+  Optional[String] $pin = undef,
+  Optional[String] $proxy = undef,
+  Optional[String] $proxy_password = undef,
+  Optional[String] $proxy_username = undef,
+  Optional[String] $release = undef,
+) {
   case $facts['os']['family'] {
     'RedHat': {
-      if $facts['os']['release']['major'] =~ /^[78]$/ {
-        $dist_version = $facts['os']['release']['major']
-        $name_string  = "Enterprise Linux ${dist_version}"
+      case $facts['os']['name'] {
+        'CentOS', 'OracleLinux', 'RedHat': {
+          $dist_type = 'el'
+          $dist_version = $facts['os']['release']['major']
+          $name_string  = "Enterprise Linux ${dist_version}"
+        }
+        'Fedora': {
+          $dist_type = 'fc'
+          $dist_version = $facts['os']['release']['full']
+          $name_string = "Fedora Core ${facts['os']['release']['full']}"
+        }
+        default: {
+          fail("Encountered unexpected OS: ${facts['os']['name']} ${facts['os']['release']['full']}!")
+        }
       }
-
-      # Fedora
-      elsif $facts['os']['name'] == 'Fedora' {
-        $dist_version  = $facts['os']['release']['full']
-        $name_string   = "Fedora Core ${facts['os']['release']['full']}"
-      }
-
-      # newer Amazon Linux releases
-      elsif ($facts['os']['name'] == 'Amazon') {
-        $dist_version = '7'
-        $name_string  = 'Enterprise Linux 7'
-      }
-
-      else {
-        fail("Could not determine NodeSource repository URL for operatingsystem: ${facts['os']['name']} operatingsystemrelease: ${facts['os']['release']['full']}.")
-      }
-
-      $dist_type = $facts['os']['name'] ? {
-        'Fedora' => 'fc',
-        default  => 'el',
-      }
-
       # nodesource repo
       $descr   = "Node.js Packages for ${name_string} - \$basearch"
       $baseurl = "https://rpm.nodesource.com/pub_${url_suffix}/${dist_type}/${dist_version}/\$basearch"
@@ -46,15 +63,30 @@ class nodejs::repo::nodesource {
       $source_descr   = "Node.js for ${name_string} - \$basearch - Source"
       $source_baseurl = "https://rpm.nodesource.com/pub_${url_suffix}/${dist_type}/${dist_version}/SRPMS"
 
-      contain 'nodejs::repo::nodesource::yum'
+      class { 'nodejs::repo::nodesource::yum':
+        baseurl        => $baseurl,
+        descr          => $descr,
+        enable_src     => $enable_src,
+        ensure         => $ensure,
+        priority       => $priority,
+        proxy          => $proxy,
+        proxy_password => $proxy_password,
+        proxy_username => $proxy_username,
+        source_baseurl => $source_baseurl,
+        source_descr   => $source_descr,
+      }
     }
     'Debian': {
-      contain 'nodejs::repo::nodesource::apt'
+      class { 'nodejs::repo::nodesource::apt':
+        enable_src => $enable_src,
+        ensure     => $ensure,
+        pin        => $pin,
+        release    => $release,
+        url_suffix => $url_suffix,
+      }
     }
     default: {
-      if ($ensure == 'present') {
-        fail("Unsupported managed NodeSource repository for osfamily: ${facts['os']['family']}, operatingsystem: ${facts['os']['name']}.")
-      }
+      fail("Encountered unexpected osfamily: ${facts['os']['family']}")
     }
   }
 }

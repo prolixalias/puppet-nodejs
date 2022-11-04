@@ -1,11 +1,31 @@
-# PRIVATE CLASS: Do not use directly.
-class nodejs::repo::nodesource::apt {
-  $enable_src = $nodejs::repo::nodesource::enable_src
-  $ensure     = $nodejs::repo::nodesource::ensure
-  $pin        = $nodejs::repo::nodesource::pin
-  $release    = $nodejs::repo::nodesource::release
-  $url_suffix = $nodejs::repo::nodesource::url_suffix
+##############################################################
+#
+#   apt
+#
+##############################################################458
+#
+# @summary apt subclass
+#
+# @param enable_src
+#   Is this repo enabled?
+# @param ensure
+#   Repo absent/present
+# @param url_suffix
+#   Appended to repo URL, essentially the nodejs version
+# @param pin
+#   Apt repo pinning
+# @param release
+#   Apt repo release codename
+#
 
+#
+class nodejs::repo::nodesource::apt (
+  Boolean $enable_src,
+  String $ensure,
+  String $url_suffix,
+  Optional[String] $pin = undef,
+  Optional[String] $release = undef,
+) {
   include apt
 
   if ($ensure != 'absent') {

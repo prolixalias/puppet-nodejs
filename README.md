@@ -474,7 +474,7 @@ User for the proxy used by the repository, if required.
 
 #### `repo_release`
 
-Optional value to override the apt distribution release.  Defaults to `undef`
+Optional value to override the apt distribution release. Defaults to `undef`
 which will autodetect the distribution. If a value is specified, this will
 change the NodeSource apt repository distribution.
 This is useful if the distribution name does not exist in the NodeSource
@@ -485,25 +485,36 @@ then work as expected on these systems.
 
 #### `repo_url_suffix`
 
-Defaults to ```12.x``` which means that the latest NodeSource 12.x release
+Defaults to ```19.x``` which means that the latest NodeSource 12.x release
 is installed. If you wish to install a 13.x release or greater, you will
 need to set this value accordingly. This parameter is a just a reflection of
 the NodeSource URL structure - NodeSource might remove old versions (such as
 0.10 and 0.12) or add new ones (such as 20.x) at any time.
 
-The following are ``repo_url_suffix`` values that reflect NodeSource versions
-that were available on 2017-11-29:
+On 2017-11-29, the ``repo_url_suffix`` matrix of supported (noted here for posterity) NodeSource versions were:
 
 * Debian 9 (Stretch) ```4.x``` ```6.x``` ```7.x``` ```8.x``` ```9.x```
 * Debian (Sid) ```0.10``` ```0.12``` ```4.x``` ```5.x``` ```6.x``` ```7.x``` ```8.x``` ```9.x```
-* Ubuntu 16.04 (Xenial) ```0.10``` ```0.12``` ```4.x``` ```5.x``` ```6.x``` ```7.x``` ```8.x``` ```9.x```
 * Ubuntu 16.10 (Yakkety) ```0.12``` ```4.x``` ```6.x``` ```7.x``` ```8.x```
 * Ubuntu 17.10 (Artful) ```4.x``` ```6.x``` ```8.x``` ```9.x```
 * RHEL/CentOS 7 ```0.10``` ```0.12``` ```4.x``` ```5.x``` ```6.x``` ```7.x``` ```8.x``` ```9.x```
-* Amazon Linux - See RHEL/CentOS 7
 * Fedora 25 ```4.x``` ```6.x``` ```7.x``` ```8.x``` ```9.x```
 * Fedora 26 ```6.x``` ```8.x``` ```9.x```
 * Fedora 27 ```8.x``` ```9.x```
+
+As of 2022-11-04, martix of supportred NodeSource ``repo_url_suffix`` values are:
+
+  - ```4.x``` ```5.x``` ```6.x``` ```7.x``` ```8.x``` ```9.x``` ```10.x``` ```11.x``` ```12.x``` ```13.x``` ```14.x``` ```15.x``` ```16.x``` ```17.x``` ```18.x``` ```19.x```
+
+  - on:
+    * Debian 10 (Buster)
+    * Debian 11 (Bullseye)
+    * Fedora 33-36
+    * RHEL 7 / CentOS 7
+    * RHEL 8 / CentOS 8 / CentOS 8 Stream / Rocky 8
+    * Ubuntu 20.04 (Focal Fossa)
+    * Ubuntu 21.04 (Hirsute Hippo)
+    * Ubuntu 22.04 (Jammy Jellyfish)
 
 #### `use_flags`
 
@@ -519,13 +530,12 @@ this with the package_provider parameter to use an alternative
 
 This module has received limited testing on:
 
-* CentOS/RHEL 7/8
-* Debian 9/10
-* Ubuntu 16.04/18.04/20.04
+* CentOS / RHEL 7 / 8
+* Debian 9 / 10
+* Ubuntu 18.04 / 20.04 / 22.04
 
-The following platforms should also work, but have not been tested:
+The following platforms should also work, but are not tested as rigorously:
 
-* Amazon Linux
 * Archlinux
 * Darwin
 * Fedora
@@ -543,13 +553,12 @@ repository. If using an operating system of the Debian-based family, you will
 need to ensure that `puppetlabs-apt` version 4.4.0 or above is installed.
 
 If using CentOS/RHEL 7 and you wish to install Node.js from EPEL rather
-than from the NodeSource repository, you will need to ensure `puppet-epel` is
-installed and is applied before this module.
+than from the NodeSource repository, just make use `puppet-epel` module and
+apply it before including this module.
 
-If using Gentoo, you will need to ensure `gentoo-portage` is installed.
+If using Gentoo, you'll need `gentoo-portage` module.
 
-If using Windows, you will need to ensure that `puppetlabs-chocolatey` is
-installed.
+If using Windows, `puppetlabs-chocolatey` module needs to be installed.
 
 nodejs::npm has the ability to fetch npm packages from Git sources. If you
 wish to use this functionality, Git needs to be installed and be in the

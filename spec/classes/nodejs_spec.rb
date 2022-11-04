@@ -141,13 +141,13 @@ describe 'nodejs', type: :class do
           end
         end
 
-        context 'and repo_url_suffix set to 9.x' do
+        context 'and repo_url_suffix set to 19.x' do
           let :params do
-            default_params.merge!(repo_url_suffix: '9.x')
+            default_params.merge!(repo_url_suffix: '19.x')
           end
 
-          it 'the repo apt::source resource should contain location = https://deb.nodesource.com/node_9.x' do
-            is_expected.to contain_apt__source('nodesource').with('location' => 'https://deb.nodesource.com/node_9.x')
+          it 'the repo apt::source resource should contain location = https://deb.nodesource.com/node_19.x' do
+            is_expected.to contain_apt__source('nodesource').with('location' => 'https://deb.nodesource.com/node_19.x')
           end
         end
 
@@ -320,15 +320,15 @@ describe 'nodejs', type: :class do
     if operatingsystemmajrelease == '7'
       operatingsystem     = 'CentOS'
       dist_type           = 'el'
-      repo_baseurl        = "https://rpm.nodesource.com/pub_12.x/#{dist_type}/#{operatingsystemmajrelease}/\$basearch"
-      repo_source_baseurl = "https://rpm.nodesource.com/pub_12.x/#{dist_type}/#{operatingsystemmajrelease}/SRPMS"
+      repo_baseurl        = "https://rpm.nodesource.com/pub_19.x/#{dist_type}/#{operatingsystemmajrelease}/\$basearch"
+      repo_source_baseurl = "https://rpm.nodesource.com/pub_19.x/#{dist_type}/#{operatingsystemmajrelease}/SRPMS"
       repo_descr          = "Node.js Packages for Enterprise Linux #{operatingsystemmajrelease} - \$basearch"
       repo_source_descr   = "Node.js for Enterprise Linux #{operatingsystemmajrelease} - \$basearch - Source"
     else
       operatingsystem     = 'Fedora'
       dist_type           = 'fc'
-      repo_baseurl        = "https://rpm.nodesource.com/pub_12.x/#{dist_type}/#{operatingsystemmajrelease}/\$basearch"
-      repo_source_baseurl = "https://rpm.nodesource.com/pub_12.x/#{dist_type}/#{operatingsystemmajrelease}/SRPMS"
+      repo_baseurl        = "https://rpm.nodesource.com/pub_19.x/#{dist_type}/#{operatingsystemmajrelease}/\$basearch"
+      repo_source_baseurl = "https://rpm.nodesource.com/pub_19.x/#{dist_type}/#{operatingsystemmajrelease}/SRPMS"
       repo_descr          = "Node.js Packages for Fedora Core #{operatingsystemmajrelease} - \$basearch"
       repo_source_descr   = "Node.js for Fedora Core #{operatingsystemmajrelease} - \$basearch - Source"
     end
@@ -398,13 +398,13 @@ describe 'nodejs', type: :class do
           end
         end
 
-        context 'and repo_url_suffix set to 5.x' do
+        context 'and repo_url_suffix set to 14.x' do
           let :params do
-            default_params.merge!(repo_url_suffix: '5.x')
+            default_params.merge!(repo_url_suffix: '14.x')
           end
 
-          it "the yum nodesource repo resource should contain baseurl = https://rpm.nodesource.com/pub_5.x/#{dist_type}/#{operatingsystemmajrelease}/\$basearch" do
-            is_expected.to contain_yumrepo('nodesource').with('baseurl' => "https://rpm.nodesource.com/pub_5.x/#{dist_type}/#{operatingsystemmajrelease}/\$basearch")
+          it "the yum nodesource repo resource should contain baseurl = https://rpm.nodesource.com/pub_14.x/#{dist_type}/#{operatingsystemmajrelease}/\$basearch" do
+            is_expected.to contain_yumrepo('nodesource').with('baseurl' => "https://rpm.nodesource.com/pub_14.x/#{dist_type}/#{operatingsystemmajrelease}/\$basearch")
           end
         end
 
@@ -1310,299 +1310,6 @@ describe 'nodejs', type: :class do
 
       it 'the nodejs package should have npm, snapshot use flags' do
         is_expected.to contain_package_use('net-libs/nodejs').with('use' => %w[npm snapshot])
-      end
-    end
-  end
-
-  context 'when running on Amazon Linux 2015.03' do
-    let :facts do
-      {
-        'os' => {
-          'family' => 'RedHat',
-          'name' => 'Amazon',
-          'release' => {
-            'full' => '2015.03',
-            'major' => '2015',
-            'minor' => '03'
-          }
-        }
-      }
-    end
-
-    repo_baseurl        = 'https://rpm.nodesource.com/pub_12.x/el/7/$basearch'
-    repo_source_baseurl = 'https://rpm.nodesource.com/pub_12.x/el/7/SRPMS'
-    repo_descr          = 'Node.js Packages for Enterprise Linux 7 - $basearch'
-    repo_source_descr   = 'Node.js for Enterprise Linux 7 - $basearch - Source'
-
-    # manage_package_repo
-    context 'with manage_package_repo set to true' do
-      let :default_params do
-        {
-          manage_package_repo: true
-        }
-      end
-
-      context 'and manage_nodejs_package set to true' do
-        let :params do
-          default_params.merge!(manage_nodejs_package: true)
-        end
-
-        it 'the nodejs package resource should be present' do
-          is_expected.to contain_package('nodejs')
-        end
-      end
-
-      context 'and manage_nodejs_package set to false' do
-        let :params do
-          default_params.merge!(manage_nodejs_package: false)
-        end
-
-        it 'the nodejs and dev package resources should not be present' do
-          is_expected.not_to contain_package('nodejs')
-          is_expected.not_to contain_package('nodejs-devel')
-        end
-      end
-
-      context 'and repo_class set to ::nodejs::repo::nodesource' do
-        let :params do
-          default_params.merge!(repo_class: 'nodejs::repo::nodesource')
-        end
-
-        it '::nodejs::repo::nodesource should be in the catalog' do
-          is_expected.to contain_class('nodejs::repo::nodesource')
-        end
-
-        it '::nodejs::repo::nodesource::yum should be in the catalog' do
-          is_expected.to contain_class('nodejs::repo::nodesource::yum')
-        end
-
-        it 'the nodesource and nodesource-source repos should contain the right description and baseurl' do
-          is_expected.to contain_yumrepo('nodesource').with('baseurl' => repo_baseurl,
-                                                            'descr' => repo_descr)
-
-          is_expected.to contain_yumrepo('nodesource-source').with('baseurl' => repo_source_baseurl,
-                                                                   'descr' => repo_source_descr)
-        end
-      end
-
-      context 'and repo_enable_src set to true' do
-        let :params do
-          default_params.merge!(repo_enable_src: true)
-        end
-
-        it 'the yumrepo resource nodesource-source should contain enabled = 1' do
-          is_expected.to contain_yumrepo('nodesource-source').with('enabled' => '1')
-        end
-      end
-
-      context 'and repo_enable_src set to false' do
-        let :params do
-          default_params.merge!(repo_enable_src: false)
-        end
-
-        it 'the yumrepo resource should contain enabled = 0' do
-          is_expected.to contain_yumrepo('nodesource-source').with('enabled' => '0')
-        end
-      end
-
-      context 'and repo_ensure set to present' do
-        let :params do
-          default_params.merge!(repo_ensure: 'present')
-        end
-
-        it 'the nodesource yum repo files should exist' do
-          is_expected.to contain_yumrepo('nodesource')
-          is_expected.to contain_yumrepo('nodesource-source')
-        end
-      end
-
-      context 'and repo_ensure set to absent' do
-        let :params do
-          default_params.merge!(repo_ensure: 'absent')
-        end
-
-        it 'the nodesource yum repo files should not exist' do
-          is_expected.to contain_yumrepo('nodesource').with('ensure' => 'absent')
-          is_expected.to contain_yumrepo('nodesource-source').with('ensure' => 'absent')
-        end
-      end
-
-      context 'and repo_proxy set to absent' do
-        let :params do
-          default_params.merge!(repo_proxy: 'absent')
-        end
-
-        it 'the yumrepo resource should contain proxy = absent' do
-          is_expected.to contain_yumrepo('nodesource').with('proxy' => 'absent')
-          is_expected.to contain_yumrepo('nodesource-source').with('proxy' => 'absent')
-        end
-      end
-
-      context 'and repo_proxy set to http://proxy.localdomain.com' do
-        let :params do
-          default_params.merge!(repo_proxy: 'http://proxy.localdomain.com')
-        end
-
-        it 'the yumrepo resource should contain proxy = http://proxy.localdomain.com' do
-          is_expected.to contain_yumrepo('nodesource').with('proxy' => 'http://proxy.localdomain.com')
-          is_expected.to contain_yumrepo('nodesource-source').with('proxy' => 'http://proxy.localdomain.com')
-        end
-      end
-
-      context 'and repo_proxy_password set to absent' do
-        let :params do
-          default_params.merge!(repo_proxy_password: 'absent')
-        end
-
-        it 'the yumrepo resource should contain proxy_password = absent' do
-          is_expected.to contain_yumrepo('nodesource').with('proxy_password' => 'absent')
-          is_expected.to contain_yumrepo('nodesource-source').with('proxy_password' => 'absent')
-        end
-      end
-
-      context 'and repo_proxy_password set to password' do
-        let :params do
-          default_params.merge!(repo_proxy_password: 'password')
-        end
-
-        it 'the yumrepo resource should contain proxy_password = password' do
-          is_expected.to contain_yumrepo('nodesource').with('proxy_password' => 'password')
-          is_expected.to contain_yumrepo('nodesource-source').with('proxy_password' => 'password')
-        end
-      end
-
-      context 'and repo_proxy_username set to absent' do
-        let :params do
-          default_params.merge!(repo_proxy_username: 'absent')
-        end
-
-        it 'the yumrepo resource should contain proxy_username = absent' do
-          is_expected.to contain_yumrepo('nodesource').with('proxy_username' => 'absent')
-          is_expected.to contain_yumrepo('nodesource-source').with('proxy_username' => 'absent')
-        end
-      end
-
-      context 'and repo_proxy_username set to proxyuser' do
-        let :params do
-          default_params.merge!(repo_proxy_username: 'proxyuser')
-        end
-
-        it 'the yumrepo resource should contain proxy_username = proxyuser' do
-          is_expected.to contain_yumrepo('nodesource').with('proxy_username' => 'proxyuser')
-          is_expected.to contain_yumrepo('nodesource-source').with('proxy_username' => 'proxyuser')
-        end
-      end
-    end
-
-    context 'with manage_package_repo set to false' do
-      let :params do
-        {
-          manage_package_repo: false
-        }
-      end
-
-      it '::nodejs::repo::nodesource should not be in the catalog' do
-        is_expected.not_to contain_class('::nodejs::repo::nodesource')
-      end
-    end
-
-    # nodejs_debug_package_ensure
-    context 'with nodejs_debug_package_ensure set to present' do
-      let :params do
-        {
-          nodejs_debug_package_ensure: 'present'
-        }
-      end
-
-      it 'the nodejs package with debugging symbols should be installed' do
-        is_expected.to contain_package('nodejs-debuginfo').with('ensure' => 'present')
-      end
-    end
-
-    context 'with nodejs_debug_package_ensure set to absent' do
-      let :params do
-        {
-          nodejs_debug_package_ensure: 'absent'
-        }
-      end
-
-      it 'the nodejs package with debugging symbols should not be present' do
-        is_expected.to contain_package('nodejs-debuginfo').with('ensure' => 'absent')
-      end
-    end
-
-    # nodejs_dev_package_ensure
-    context 'with nodejs_dev_package_ensure set to present' do
-      let :params do
-        {
-          nodejs_dev_package_ensure: 'present'
-        }
-      end
-
-      it 'the nodejs development package should be installed' do
-        is_expected.to contain_package('nodejs-devel').with('ensure' => 'present')
-      end
-    end
-
-    context 'with nodejs_dev_package_ensure set to absent' do
-      let :params do
-        {
-          nodejs_dev_package_ensure: 'absent'
-        }
-      end
-
-      it 'the nodejs development package should not be present' do
-        is_expected.to contain_package('nodejs-devel').with('ensure' => 'absent')
-      end
-    end
-
-    # nodejs_package_ensure
-    context 'with nodejs_package_ensure set to present' do
-      let :params do
-        {
-          nodejs_package_ensure: 'present'
-        }
-      end
-
-      it 'the nodejs package should be present' do
-        is_expected.to contain_package('nodejs').with('ensure' => 'present')
-      end
-    end
-
-    context 'with nodejs_package_ensure set to absent' do
-      let :params do
-        {
-          nodejs_package_ensure: 'absent'
-        }
-      end
-
-      it 'the nodejs package should be absent' do
-        is_expected.to contain_package('nodejs').with('ensure' => 'absent')
-      end
-    end
-
-    # npm_package_ensure
-    context 'with npm_package_ensure set to present' do
-      let :params do
-        {
-          npm_package_ensure: 'present'
-        }
-      end
-
-      it 'the npm package should be present' do
-        is_expected.to contain_package('npm').with('ensure' => 'present')
-      end
-    end
-
-    context 'with npm_package_ensure set to absent' do
-      let :params do
-        {
-          npm_package_ensure: 'absent'
-        }
-      end
-
-      it 'the npm package should be absent' do
-        is_expected.to contain_package('npm').with('ensure' => 'absent')
       end
     end
   end

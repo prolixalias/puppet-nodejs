@@ -1,28 +1,53 @@
-# PRIVATE CLASS: Do not use directly.
-class nodejs::repo::nodesource::yum {
-  $baseurl        = $nodejs::repo::nodesource::baseurl
-  $descr          = $nodejs::repo::nodesource::descr
-  $enable_src     = $nodejs::repo::nodesource::enable_src
-  $ensure         = $nodejs::repo::nodesource::ensure
-  $priority       = $nodejs::repo::nodesource::priority
-  $proxy          = $nodejs::repo::nodesource::proxy
-  $proxy_password = $nodejs::repo::nodesource::proxy_password
-  $proxy_username = $nodejs::repo::nodesource::proxy_username
-  $source_baseurl = $nodejs::repo::nodesource::source_baseurl
-  $source_descr   = $nodejs::repo::nodesource::source_descr
+##############################################################
+#
+#   yum
+#
+##############################################################458
+#
+# @summary yum subclass
+#
+# @param enable_src
+#   Is this repo enabled?
+# @param baseurl
+#   The base URL for package repo
+# @param descr
+#   A description for package repo
+# @param ensure
+#   Repo absent/present
+# @param priority
+#   The repo's priority, 1-99 (higher number = lower priority)
+# @param source_baseurl
+#   The base URL for source repo
+# @param source_descr
+#   A description for source repo
+# @param proxy
+#   FQDN of proxy server
+# @param proxy_password
+#   Password to access proxy server
+# @param proxy_username
+#   Username to access proxy server
+#
 
+#
+class nodejs::repo::nodesource::yum (
+  Boolean $enable_src,
+  String $baseurl,
+  String $descr,
+  String $ensure,
+  String $priority,
+  String $source_baseurl,
+  String $source_descr,
+  Optional[String] $proxy = undef,
+  Optional[String] $proxy_password = undef,
+  Optional[String] $proxy_username = undef,
+) {
   $yum_source_enabled = $enable_src ? {
     true    => '1',
     default => '0',
   }
 
-  $yum_failovermethod = (versioncmp($facts['os']['release']['major'], '8') >= 0 and $priority == 'absent') ? {
-    true    => 'absent',
-    default => 'priority',
-  }
-
   if ($ensure == 'present') {
-    if $facts['os']['release']['major'] == '8' {
+    unless $facts['os']['release']['major'] < '8' {
       file { 'dnf_module':
         ensure => file,
         path   => '/etc/dnf/modules.d/nodejs.module',
@@ -36,8 +61,7 @@ class nodejs::repo::nodesource::yum {
     yumrepo { 'nodesource':
       descr          => $descr,
       baseurl        => $baseurl,
-      enabled        => '1',
-      failovermethod => $yum_failovermethod,
+      enabled        => $yum_source_enabled,
       gpgkey         => 'file:///etc/pki/rpm-gpg/NODESOURCE-GPG-SIGNING-KEY-EL',
       gpgcheck       => '1',
       priority       => $priority,
@@ -51,7 +75,6 @@ class nodejs::repo::nodesource::yum {
       descr          => $source_descr,
       baseurl        => $source_baseurl,
       enabled        => $yum_source_enabled,
-      failovermethod => $yum_failovermethod,
       gpgkey         => 'file:///etc/pki/rpm-gpg/NODESOURCE-GPG-SIGNING-KEY-EL',
       gpgcheck       => '1',
       priority       => $priority,
@@ -68,9 +91,7 @@ class nodejs::repo::nodesource::yum {
       owner  => 'root',
       source => "puppet:///modules/${module_name}/repo/nodesource/NODESOURCE-GPG-SIGNING-KEY-EL",
     }
-  }
-
-  else {
+  } else {
     yumrepo { 'nodesource':
       ensure => 'absent',
     }
@@ -79,7 +100,7 @@ class nodejs::repo::nodesource::yum {
       ensure => 'absent',
     }
 
-    if $facts['os']['release']['major'] == '8' {
+    unless $facts['os']['release']['major'] < '8' {
       file { 'dnf_module':
         ensure => absent,
         path   => '/etc/dnf/modules.d/nodejs.module',

@@ -1,16 +1,47 @@
-# See README.md for usage information.
+##############################################################
+#
+#   npm
+#
+##############################################################458
+#
+# @summary Defined type for npm
+#
+# @param target
+#
+# @param ensure
+#
+# @param cmd_exe_path
+#
+# @param install_options
+#
+# @param npm_path
+#
+# @param package
+#
+# @param source
+#
+# @param uninstall_options
+#
+# @param home_dir
+#
+# @param user
+#
+# @param use_package_json 
+#
+
+#
 define nodejs::npm (
-  Stdlib::Absolutepath $target,
-  Pattern[/^[^<            >= ]/] $ensure            = 'present',
-  $cmd_exe_path             = $nodejs::cmd_exe_path,
-  Array $install_options    = [],
-  $npm_path                 = $nodejs::npm_path,
-  String $package           = $title,
-  $source                   = 'registry',
+  Array $install_options = [],
   Array $uninstall_options  = [],
-  $home_dir                 = '/root',
-  $user                     = undef,
   Boolean $use_package_json = false,
+  Pattern[/^[^<            >= ]/] $ensure = 'present',
+  Stdlib::Absolutepath $target,
+  String $home_dir = '/root',
+  String $npm_path = $nodejs::npm_path,
+  String $package = $title,
+  String $source = 'registry',
+  Optional[String] $cmd_exe_path = $nodejs::cmd_exe_path,
+  Optional[String] $user = undef,
 ) {
   $install_options_string = join($install_options, ' ')
   $uninstall_options_string = join($uninstall_options, ' ')
@@ -78,6 +109,7 @@ define nodejs::npm (
   } else {
     $npm_command = 'install'
     $options = $install_options_string
+
     # Conditionally require proxy and https-proxy to be set first only if the resource exists.
     Nodejs::Npm::Global_config_entry<| title == 'https-proxy' |> -> Exec["npm_install_${name}"]
     Nodejs::Npm::Global_config_entry<| title == 'proxy' |> -> Exec["npm_install_${name}"]

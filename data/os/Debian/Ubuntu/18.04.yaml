@@ -1,0 +1,3 @@
+---
+nodejs::nodejs_dev_package_name: 'nodejs-dev'
+nodejs::repo_release: 'bionic'
