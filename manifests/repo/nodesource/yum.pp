@@ -47,8 +47,8 @@ class nodejs::repo::nodesource::yum (
   }
 
   $package_cache_update_command = $facts['os']['release']['major'] ? {
-    /^(6|7)$/ => 'yum',
-    default   => 'dnf',
+    /^(6|7)$/ => '/usr/bin/yum',
+    default   => '/usr/bin/dnf',
   }
 
   case $ensure {
