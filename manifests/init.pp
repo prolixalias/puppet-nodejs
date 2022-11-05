@@ -67,7 +67,6 @@ class nodejs (
   String $nodejs_debug_package_ensure,
   String $nodejs_dev_package_ensure,
   String $nodejs_package_ensure,
-  String $nodejs_package_name,
   String $npm_path,
   String $repo_ensure,
   String $repo_priority,
@@ -78,6 +77,8 @@ class nodejs (
   Optional[String] $cmd_exe_path = undef,
   Optional[String] $nodejs_debug_package_name = undef,
   Optional[String] $nodejs_dev_package_name = undef,
+  Optional[String] $nodejs_package_name = undef,
+  Optional[String] $npm_package_ensure = undef,
   Optional[String] $npmrc_auth = undef,
   Optional[String] $package_provider = undef,
   Optional[String] $repo_class = undef,
@@ -86,7 +87,6 @@ class nodejs (
   Optional[String] $repo_proxy_password = undef,
   Optional[String] $repo_proxy_username = undef,
   Optional[String] $repo_release = undef,
-  Optional[String] $npm_package_ensure = undef,
   Optional[Variant[Boolean, String]] $npm_package_name = undef,
 ) {
   if $manage_package_repo and !$repo_class {
