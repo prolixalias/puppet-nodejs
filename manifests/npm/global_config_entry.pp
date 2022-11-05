@@ -1,10 +1,30 @@
-# See README.md for usage information.
+##############################################################
+#
+#   global_config_entry
+#
+##############################################################458
+#
+# @summary global_config_entry defined type
+#
+# @param ensure
+#   Argument passed to 'config' command (absent = 'delete', default = 'set')
+# @param config_setting
+#   namevar
+# @param npm_path
+#   Absolute path to npm binary
+# @param cmd_exe_path
+#   Absolute path to cmd (Windows)
+# @param value
+#   Value to pass to 'config' command (set/delete)
+#
+
+#
 define nodejs::npm::global_config_entry (
   Enum['present', 'absent'] $ensure = 'present',
-  $config_setting                   = $title,
-  $cmd_exe_path                     = $nodejs::cmd_exe_path,
-  $npm_path                         = $nodejs::npm_path,
-  $value                            = undef,
+  String $config_setting = $title,
+  String $npm_path = $nodejs::npm_path,
+  Optional[String] $cmd_exe_path = $nodejs::cmd_exe_path,
+  Optional[String] $value = undef,
 ) {
   include nodejs
 

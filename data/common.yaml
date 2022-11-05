@@ -1,0 +1,11 @@
+---
+nodejs::manage_package_repo: true
+nodejs::nodejs_dev_package_ensure: 'present'
+nodejs::nodejs_package_name: 'nodejs'
+nodejs::nodejs_debug_package_ensure: 'absent'
+nodejs::nodejs_package_ensure: 'present'
+nodejs::repo_enable_src: false
+nodejs::repo_ensure: 'present'
+nodejs::repo_priority: '1'
+nodejs::repo_url_suffix: '19.x'
+nodejs::npm_path: '/usr/bin/npm'
