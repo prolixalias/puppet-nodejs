@@ -31,7 +31,8 @@ class nodejs::repo::nodesource::apt (
   case $ensure {
     'absent': {
       apt::source { 'nodesource':
-        ensure => 'absent',
+        ensure  => 'absent',
+        release => $release,
       }
     }
     default: {
@@ -50,7 +51,7 @@ class nodejs::repo::nodesource::apt (
       }
 
       Apt::Source['nodesource'] -> Package<| tag == 'nodesource_repo' |>
-      Class['Apt::Update'] -> Package<| tag == 'nodesource_repo' |>
+      -> Class['Apt::Update'] -> Package<| tag == 'nodesource_repo' |>
     }
   }
 }
