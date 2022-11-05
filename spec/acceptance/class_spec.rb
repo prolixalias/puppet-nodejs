@@ -33,81 +33,81 @@ describe 'nodejs' do
     end
   end
 
-  context 'repo_class => epel', if: ((fact('os.family') == 'RedHat') && (fact('os.release.major') < '8')) do
-    let(:pp) do
-      "
-      class { 'nodejs':
-        repo_class => '::epel',
-      }
-      "
-    end
+  # context 'repo_class => epel', if: ((fact('os.family') == 'RedHat') && (fact('os.release.major') > '6')) do
+  #   let(:pp) do
+  #     "
+  #     class { 'nodejs':
+  #       repo_class => 'epel',
+  #     }
+  #     "
+  #   end
 
-    include_examples 'cleanup'
+  #   include_examples 'cleanup'
 
-    it_behaves_like 'an idempotent resource'
+  #   it_behaves_like 'an idempotent resource'
 
-    describe package('nodejs') do
-      it { is_expected.to be_installed }
+  #   describe package('nodejs') do
+  #     it { is_expected.to be_installed }
 
-      it 'comes from the expected source' do
-        pending("This won't work until we have CentOS 7.4 because of dependency")
-        pkg_output = shell(pkg_cmd)
-        expect(pkg_output.stdout).to match 'epel'
-      end
-    end
+  #     it 'comes from the expected source' do
+  #       pending("This won't work until we have CentOS 7.4 because of dependency")
+  #       pkg_output = shell(pkg_cmd)
+  #       expect(pkg_output.stdout).to match 'epel'
+  #     end
+  #   end
 
-    context 'set global_config_entry secret', if: fact('os.family') == 'RedHat' do
-      let :pp do
-        "
-        class { 'nodejs': }
-        nodejs::npm::global_config_entry { '//path.to.registry/:_secret':
-          ensure => present,
-          value => 'cGFzc3dvcmQ=',
-          require => Package[nodejs],
-        }
-        "
-      end
+  #   context 'set global_config_entry secret', if: fact('os.family') == 'RedHat' do
+  #     let :pp do
+  #       "
+  #       class { 'nodejs': }
+  #       nodejs::npm::global_config_entry { '//path.to.registry/:_secret':
+  #         ensure => present,
+  #         value => 'cGFzc3dvcmQ=',
+  #         require => Package[nodejs],
+  #       }
+  #       "
+  #     end
 
-      it_behaves_like 'an idempotent resource'
+  #     it_behaves_like 'an idempotent resource'
 
-      describe package('nodejs') do
-        it { is_expected.to be_installed }
-      end
+  #     describe package('nodejs') do
+  #       it { is_expected.to be_installed }
+  #     end
 
-      describe 'npm config' do
-        it 'contains the global_config_entry secret' do
-          npm_output = shell('cat $(/usr/bin/npm config get globalconfig)')
-          expect(npm_output.stdout).to match '//path.to.registry/:_secret="cGFzc3dvcmQ="'
-        end
-      end
-    end
+  #     describe 'npm config' do
+  #       it 'contains the global_config_entry secret' do
+  #         npm_output = shell('cat $(/usr/bin/npm config get globalconfig)')
+  #         expect(npm_output.stdout).to match '//path.to.registry/:_secret="cGFzc3dvcmQ="'
+  #       end
+  #     end
+  #   end
 
-    context 'set global_config_entry secret unquoted', if: fact('os.family') == 'RedHat' do
-      let :pp do
-        "
-        class { 'nodejs': }
-        nodejs::npm::global_config_entry { '//path.to.registry/:_secret':
-          ensure => present,
-          value => 'cGFzc3dvcmQ',
-          require => Package[nodejs],
-        }
-        "
-      end
+  #   context 'set global_config_entry secret unquoted', if: fact('os.family') == 'RedHat' do
+  #     let :pp do
+  #       "
+  #       class { 'nodejs': }
+  #       nodejs::npm::global_config_entry { '//path.to.registry/:_secret':
+  #         ensure => present,
+  #         value => 'cGFzc3dvcmQ',
+  #         require => Package[nodejs],
+  #       }
+  #       "
+  #     end
 
-      it_behaves_like 'an idempotent resource'
+  #     it_behaves_like 'an idempotent resource'
 
-      describe package('nodejs') do
-        it { is_expected.to be_installed }
-      end
+  #     describe package('nodejs') do
+  #       it { is_expected.to be_installed }
+  #     end
 
-      describe 'npm config' do
-        it 'contains the global_config_entry secret' do
-          npm_output = shell('cat $(/usr/bin/npm config get globalconfig)')
-          expect(npm_output.stdout).to match '//path.to.registry/:_secret=cGFzc3dvcmQ'
-        end
-      end
-    end
-  end
+  #     describe 'npm config' do
+  #       it 'contains the global_config_entry secret' do
+  #         npm_output = shell('cat $(/usr/bin/npm config get globalconfig)')
+  #         expect(npm_output.stdout).to match '//path.to.registry/:_secret=cGFzc3dvcmQ'
+  #       end
+  #     end
+  #   end
+  # end
 
   context 'dist packages' do
     let :pp do
