@@ -20,7 +20,6 @@ shared_examples 'cleanup' do
         nodejs_package_ensure       => absent,
         npm_package_ensure          => absent,
         repo_ensure                 => absent,
-        repo_release                => 'bionic'
       }
       "
     end

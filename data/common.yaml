@@ -8,5 +8,4 @@ nodejs::repo_enable_src: false
 nodejs::repo_ensure: 'present'
 nodejs::repo_priority: '1'
 nodejs::repo_url_suffix: '19.x'
-nodejs::use_flags: ['npm', 'snapshot']
 nodejs::npm_path: '/usr/bin/npm'
