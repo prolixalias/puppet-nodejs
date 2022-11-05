@@ -47,8 +47,8 @@ class nodejs::repo::nodesource::yum (
   }
 
   $package_cache_update_command = $facts['os']['release']['major'] ? {
-    /^(6|7)$/ => '/usr/bin/yum',
-    default   => '/usr/bin/dnf',
+    /^(6|7)$/ => '/usr/bin/yum update -y',
+    default   => '/usr/bin/dnf --refresh',
   }
 
   case $ensure {
@@ -116,7 +116,7 @@ class nodejs::repo::nodesource::yum (
       }
 
       exec { 'update package cache as-needed':
-        command     => "${package_cache_update_command} update",
+        command     => $package_cache_update_command,
         refreshonly => true,
       }
     }
