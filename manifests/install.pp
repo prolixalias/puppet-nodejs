@@ -6,8 +6,6 @@
 #
 # @summary Install subclass
 #
-# @param use_flags
-#   Gentoo use_package use_flags
 # @param manage_nodejs_package
 #   Should we manage nodejs package?
 # @param nodejs_debug_package_ensure
@@ -16,6 +14,8 @@
 #   Package name for nodejs
 # @param npm_package_ensure
 #   Dist npm package state
+# @param gentoo_use_flags
+#   Gentoo use_package use_flags
 # @param npmrc_config
 #   Configuration to place in .npmrc file
 # @param nodejs_debug_package_name
@@ -36,11 +36,11 @@
 
 #
 class nodejs::install (
-  Array $use_flags,
   Boolean $manage_nodejs_package,
   String $nodejs_debug_package_ensure,
   String $nodejs_package_name,
   String $npm_package_ensure,
+  Array $gentoo_use_flags = [],
   Hash $npmrc_config = {},
   Optional[String] $nodejs_debug_package_name = undef,
   Optional[String] $nodejs_dev_package_ensure = undef,
@@ -54,12 +54,12 @@ class nodejs::install (
     fail("Use of private class ${name} by ${caller_module_name}")
   }
 
-  # npm is a Gentoo USE flag
+  # Gentoo
   if $facts['os']['name'] == 'Gentoo' and $manage_nodejs_package {
     package_use { $nodejs_package_name:
       ensure => present,
       target => 'nodejs-flags',
-      use    => $use_flags,
+      use    => $gentoo_use_flags, #gentoo_use_flags is only used here
       before => Package[$nodejs_package_name],
     }
   }

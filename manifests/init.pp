@@ -6,8 +6,6 @@
 #
 # @summary Install and configure node.js
 #
-# @param use_flags
-#   Gentoo use_package use_flags
 # @param manage_package_repo
 #   Should we manage nodesource repo?
 # @param repo_enable_src
@@ -28,6 +26,8 @@
 #   Yum repo 'priority' value for nodesource repo
 # @param repo_url_suffix
 #   Nodesource repo suffix, essentially yhe version of nodejs
+# @param gentoo_use_flags
+#   Gentoo use_package use_flags
 # @param manage_nodejs_package
 #   Should we manage nodejs package?
 # @param npmrc_config
@@ -62,7 +62,6 @@
 
 #
 class nodejs (
-  Array $use_flags,
   Boolean $manage_package_repo,
   Boolean $repo_enable_src,
   String $nodejs_debug_package_ensure,
@@ -73,6 +72,7 @@ class nodejs (
   String $repo_ensure,
   String $repo_priority,
   String $repo_url_suffix,
+  Array $gentoo_use_flags = [],
   Boolean $manage_nodejs_package = true,
   Hash $npmrc_config = {},
   Optional[String] $cmd_exe_path = undef,
@@ -95,20 +95,21 @@ class nodejs (
 
   if $manage_package_repo {
     class { $repo_class:
-      enable_src     => $repo_enable_src,
       ensure         => $repo_ensure,
-      priority       => $repo_priority,
-      url_suffix     => $repo_url_suffix,
+      enable_src     => $repo_enable_src,
       pin            => $repo_pin,
+      priority       => $repo_priority,
       proxy          => $repo_proxy,
       proxy_password => $repo_proxy_password,
       proxy_username => $repo_proxy_username,
       release        => $repo_release,
+      url_suffix     => $repo_url_suffix,
       before         => Class['nodejs::install'],
     }
   }
 
   class { 'nodejs::install':
+    gentoo_use_flags            => $gentoo_use_flags,
     manage_nodejs_package       => $manage_nodejs_package,
     nodejs_debug_package_ensure => $nodejs_debug_package_ensure,
     nodejs_debug_package_name   => $nodejs_debug_package_name,
@@ -121,6 +122,5 @@ class nodejs (
     npmrc_auth                  => $npmrc_auth,
     npmrc_config                => $npmrc_config,
     package_provider            => $package_provider,
-    use_flags                   => $use_flags,
   }
 }
