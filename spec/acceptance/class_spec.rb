@@ -6,7 +6,7 @@ describe 'nodejs' do
   case fact('os.family')
   when 'RedHat'
     pkg_cmd = 'yum info nodejs | grep "^From repo"'
-    # is it this? # install_module_from_forge('puppet-epel', '>= 4.1.0 < 5.0.0')
+    install_module_from_forge('puppet-epel', '>= 4.1.0 < 5.0.0')
   when 'Debian'
     pkg_cmd = 'dpkg -s nodejs | grep "^Maintainer"'
     install_module_from_forge('puppetlabs-apt', '>= 9.0.0 < 10.0.0')
