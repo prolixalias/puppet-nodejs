@@ -1301,10 +1301,10 @@ describe 'nodejs', type: :class do
       end
     end
 
-    context 'with use_flags set to npm, snapshot' do
+    context 'with gentoo_use_flags set to npm, snapshot' do
       let :params do
         {
-          use_flags: %w[npm snapshot]
+          gentoo_use_flags: %w[npm snapshot]
         }
       end
 

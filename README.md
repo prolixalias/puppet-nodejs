@@ -516,7 +516,7 @@ As of 2022-11-04, martix of supportred NodeSource ``repo_url_suffix`` values are
     * Ubuntu 21.04 (Hirsute Hippo)
     * Ubuntu 22.04 (Jammy Jellyfish)
 
-#### `use_flags`
+#### `gentoo_use_flags`
 
 The USE flags to use for the Node.js package on Gentoo systems. Defaults to
 ['npm', 'snapshot'].
