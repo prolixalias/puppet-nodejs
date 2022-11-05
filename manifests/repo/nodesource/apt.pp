@@ -51,7 +51,7 @@ class nodejs::repo::nodesource::apt (
       }
 
       Apt::Source['nodesource'] -> Package<| tag == 'nodesource_repo' |>
-      -> Class['Apt::Update'] -> Package<| tag == 'nodesource_repo' |>
+      Class['Apt::Update'] -> Package<| tag == 'nodesource_repo' |>
     }
   }
 }
