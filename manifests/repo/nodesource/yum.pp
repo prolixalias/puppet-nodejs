@@ -46,64 +46,78 @@ class nodejs::repo::nodesource::yum (
     default => '0',
   }
 
-  if ($ensure == 'present') {
-    unless $facts['os']['release']['major'] < '8' {
-      file { 'dnf_module':
+  $package_cache_update_command = $facts['os']['release']['major'] ? {
+    /^(6|7)$/ => 'yum',
+    default   => 'dnf',
+  }
+
+  case $ensure {
+    'absent': {
+      unless $facts['os']['release']['major'] < '8' {
+        file { 'dnf_module':
+          ensure => $ensure,
+          path   => '/etc/dnf/modules.d/nodejs.module',
+        }
+      }
+      yumrepo { 'nodesource':
+        ensure => $ensure,
+      }
+
+      yumrepo { 'nodesource-source':
+        ensure => $ensure,
+      }
+    }
+    default: {
+      unless $facts['os']['release']['major'] < '8' {
+        file { 'dnf_module':
+          ensure => file,
+          path   => '/etc/dnf/modules.d/nodejs.module',
+          group  => '0',
+          mode   => '0644',
+          owner  => 'root',
+          source => "puppet:///modules/${module_name}/repo/dnf/nodejs.module",
+        }
+      }
+
+      yumrepo { 'nodesource':
+        descr          => $descr,
+        baseurl        => $baseurl,
+        enabled        => $yum_source_enabled,
+        gpgkey         => 'file:///etc/pki/rpm-gpg/NODESOURCE-GPG-SIGNING-KEY-EL',
+        gpgcheck       => '1',
+        priority       => $priority,
+        proxy          => $proxy,
+        proxy_password => $proxy_password,
+        proxy_username => $proxy_username,
+        require        => File['/etc/pki/rpm-gpg/NODESOURCE-GPG-SIGNING-KEY-EL'],
+        notify         => Exec['update package cache as-needed'],
+      }
+
+      yumrepo { 'nodesource-source':
+        descr          => $source_descr,
+        baseurl        => $source_baseurl,
+        enabled        => $yum_source_enabled,
+        gpgkey         => 'file:///etc/pki/rpm-gpg/NODESOURCE-GPG-SIGNING-KEY-EL',
+        gpgcheck       => '1',
+        priority       => $priority,
+        proxy          => $proxy,
+        proxy_password => $proxy_password,
+        proxy_username => $proxy_username,
+        require        => File['/etc/pki/rpm-gpg/NODESOURCE-GPG-SIGNING-KEY-EL'],
+        notify         => Exec['update package cache as-needed'],
+      }
+
+      file { '/etc/pki/rpm-gpg/NODESOURCE-GPG-SIGNING-KEY-EL':
         ensure => file,
-        path   => '/etc/dnf/modules.d/nodejs.module',
         group  => '0',
         mode   => '0644',
         owner  => 'root',
-        source => "puppet:///modules/${module_name}/repo/dnf/nodejs.module",
+        source => "puppet:///modules/${module_name}/repo/nodesource/NODESOURCE-GPG-SIGNING-KEY-EL",
       }
-    }
 
-    yumrepo { 'nodesource':
-      descr          => $descr,
-      baseurl        => $baseurl,
-      enabled        => $yum_source_enabled,
-      gpgkey         => 'file:///etc/pki/rpm-gpg/NODESOURCE-GPG-SIGNING-KEY-EL',
-      gpgcheck       => '1',
-      priority       => $priority,
-      proxy          => $proxy,
-      proxy_password => $proxy_password,
-      proxy_username => $proxy_username,
-      require        => File['/etc/pki/rpm-gpg/NODESOURCE-GPG-SIGNING-KEY-EL'],
-    }
-
-    yumrepo { 'nodesource-source':
-      descr          => $source_descr,
-      baseurl        => $source_baseurl,
-      enabled        => $yum_source_enabled,
-      gpgkey         => 'file:///etc/pki/rpm-gpg/NODESOURCE-GPG-SIGNING-KEY-EL',
-      gpgcheck       => '1',
-      priority       => $priority,
-      proxy          => $proxy,
-      proxy_password => $proxy_password,
-      proxy_username => $proxy_username,
-      require        => File['/etc/pki/rpm-gpg/NODESOURCE-GPG-SIGNING-KEY-EL'],
-    }
-
-    file { '/etc/pki/rpm-gpg/NODESOURCE-GPG-SIGNING-KEY-EL':
-      ensure => file,
-      group  => '0',
-      mode   => '0644',
-      owner  => 'root',
-      source => "puppet:///modules/${module_name}/repo/nodesource/NODESOURCE-GPG-SIGNING-KEY-EL",
-    }
-  } else {
-    yumrepo { 'nodesource':
-      ensure => 'absent',
-    }
-
-    yumrepo { 'nodesource-source':
-      ensure => 'absent',
-    }
-
-    unless $facts['os']['release']['major'] < '8' {
-      file { 'dnf_module':
-        ensure => absent,
-        path   => '/etc/dnf/modules.d/nodejs.module',
+      exec { 'update package cache as-needed':
+        command     => "${package_cache_update_command} update",
+        refreshonly => true,
       }
     }
   }
