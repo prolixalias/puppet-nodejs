@@ -12,26 +12,26 @@ describe 'nodejs' do
     install_module_from_forge('puppetlabs-apt', '>= 9.0.0 < 10.0.0')
   end
 
-  # context 'default parameters' do
-  #   let(:pp) do
-  #     "
-  #     class { 'nodejs': }
-  #     "
-  #   end
+  context 'default parameters' do
+    let(:pp) do
+      "
+      class { 'nodejs': }
+      "
+    end
 
-  #   it_behaves_like 'an idempotent resource'
+    it_behaves_like 'an idempotent resource'
 
-  #   if %w[RedHat Debian].include? fact('os.family')
-  #     describe package('nodejs') do
-  #       it { is_expected.to be_installed }
+    if %w[RedHat Debian].include? fact('os.family')
+      describe package('nodejs') do
+        it { is_expected.to be_installed }
 
-  #       it 'comes from the expected source' do
-  #         pkg_output = shell(pkg_cmd)
-  #         expect(pkg_output.stdout).to match 'nodesource'
-  #       end
-  #     end
-  #   end
-  # end
+        it 'comes from the expected source' do
+          pkg_output = shell(pkg_cmd)
+          expect(pkg_output.stdout).to match 'nodesource'
+        end
+      end
+    end
+  end
 
   # context 'repo_class => epel', if: ((fact('os.family') == 'RedHat') && (fact('os.release.major') > '6')) do
   #   let(:pp) do
